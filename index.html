@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <script src="https://d3js.org/d3.v7.min.js"></script>
+    <script src="d3covid.js"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.min.js" integrity="sha384-cVKIPhGWiC2Al4u+LWgxfKTRIcfu0JTxR+EQDz/bgldoEyl4H0zUF0QKbrJ0EcQF" crossorigin="anonymous"></script>
+    <link rel = "stylesheet" href = "style.css"></link>
+</head>
+<body>
+    <div class = "row p-3 pb-0">
+        <div class = "col">
+            <h1>Average Daily Covid Confirmed Cases in the US Per Month </h1>
+        </div>
+    </div>
+    <!-- <div class = "row">
+        <div class = "col">
+            <h5>Select on each bar for more information</h5>
+        </div>
+    </div> -->
+
+    <div class = "row p-3 pt-0">
+        <div class = "col-lg">
+            <svg width="800" height="500"></svg>
+        </div>
+        <div class = "col-lg px-5 pt-5 mt-5">
+            <div class="card">
+                <img class="card-img-top" id = "covid-img" src="images/mar2020.jpg" alt="Card image cap">
+                <div class="card-body">
+                <p class="card-text" id = "covid-info">
+                    In January 2020, the world had no idea what was about to approach them. Click on each bar to see where the US was 
+                    in fighting COVID for that month.
+                </p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+<script>
+    // Variable for text content
+    textContent = {
+        'jan2020': 
+            'On January 9th, 2020, WHO announced the first "pneumonia" like case in Wuhan,\
+            China. Later in the month, the CDC confirms the first case in the US, a Washington state resident \
+            who just returned from a trip from Wuhan on January 15th. Wuhan becomes under quarantine and on January \
+            31st, WHO issued a global health emergency.',
+        'feb2020':
+            'On February 3rd, the US Declares a Public Health Emergency. Most of the public started \
+            to become aware of what COVID was, but it was not nearly accepted as being a pandemic. China \
+            soon begins to see COVID-19 deaths exceeding those of the SARS Crisis.',                
+        'mar2020': 
+            'On March 6th, 21 passengers on a California cruise ship test positive for the virus. \
+            Things begin to intensify. By March 11th, the WHO declares COVID-19 as a pandemic and soon after,\
+            the US goes into lockdown and declares COVID-19 as a national emergency. The stock market continued\
+            to tumble as growing fears of the economic impact of COVID were lingering. Towards the end of the \
+            month, the FDA authorizes the use of hydroxychloroquine as a COVID-19 treatment. At this point \
+            the narrative around the country was still confusing.',
+        'apr2020': 
+            'The COVID-19 pandemic begins to intensify and the public realizes that it is not a joke. \
+            Countries continue to close borders, businesses and schools are shutting down, and mask-wearing and social \
+            distancing begin to become the new norm.',
+        'may2020': 
+            'Both Australia and New Zealand have almost flattened their COVID curve, while the US was quickly approaching \
+            the 100,000 COVID death milestone. On the otherhand, the Trump Administration and AstraZeneca established a \
+            vaccine collaboration, with the first doses expected to be delivered as early as October 2020. Other \
+            countries such as Italy, China, and South Korea, have begun reducing the restrictions previously set.',
+        'jun2020': 
+            'Cases begin to spike around the US as states began to ease the social distancing restrictions. Recent developments \
+            in the Black Lives Matter protests brought large crowds together, and Americans began to hit the beach for the summer. \
+            The US determined this to be the start of the "second-wave". Meanwhile, the NIH stops the trials of Hydroxychloroquine, \
+            after deeming that the treatment provides no benefit.',
+        'jul2020': 
+            'On July 2nd, the US records 50,000 new cases of COVID-19, which is the largest one day spike since the start \
+            of the pandemic. Moderna begins Phase 3 trials on their vaccine and receive $472M from the Trump Administration \
+            for the expansion of the trials. Russia announces that they will have a vaccine ready by August, striving to be \
+            the first country to rollout a vaccine. US sporting leagues, such as the MLB and NBA, begin playing in closed, \
+            no-fan arenas',
+        'aug2020': 
+            'New Zealand, once considered the model country for COVID-19 regulations, announces a lockdown after recording \
+            the first locally transmitted case in 102 days. Meanwhile in the US, things are beginning to expedite with vaccines, \
+            as the Trump Adminsitration grants $1.5 billion to Moderna, at an average dose price of $15. Presidental candidate \
+            Joe Biden recommends that the US should initiate a mask mandate that will span for 3 months.',
+        'sep2020': 
+            'The vaccine race continues as Pfizer expands their phase 3 trials, providing another lead candidate for the \
+            COVID-19 vaccine. Johnson & Johnson also begin Phase 3 trials of a new, single-dose vaccine. US airports stop \
+            temperature screenings of international travelers. Meanwhile in the US, the presdential election is picking up \
+            speed and media attention.',
+        'oct2020': 
+            'President Trump and First Lady test positive for COVID-19. Shortly after, the White House sees their COVID \
+            outbreak growing to 34. Cases continue to spike in most states and global cases top 40 million. The FDA approves \
+            Remdesivir as the first COVID-19 drug used for treatment. Moderna and Pfizer begin to rollout vaccines to essential \
+            healthcare workers on the frontline.',
+        'nov2020':
+            'Joe Biden wins the US presidential election, and the US reports an unprecedented 100,000 new cases in 1 day. \
+            The vaccine race continues as both Moderna and Pfizer show high efficacy in their latest studies. As the holiday \
+            seasons ramps up, NIAID Director Dr. Anthony Fauci and the CDC continues to emphasize social distancing.',
+        'dec2020':
+            'Both Moderna and Pfizer are granted emergency approval from the FDA. The US government continues to purchase \
+            and improve upon the vaccine rollout plan. In the meantime, a new variant is circling around in the UK causing \
+            for even more concern. By the end of the month, this new variant has spread to some states in the US.',
+        'jan2021':
+            'As the new year rolls in, the number of cases and deaths in the US begins to fall. Yet, more variants are \
+            spreading around the world. President Biden is sworn into office and attempts to expedite the vaccine rollout. \
+            Now, elderly Americans become eligible for the vaccine and many are lining up to take either the Moderna or \
+            Pfizer vaccine. Also this month, President Biden announces new COVID stimulus relief for Americans.',
+        'feb2021':
+            'The Biden Administration soon realizes the pressures of the vaccine demand. The addition of a third vaccine \
+            from Johnson & Johnson provides a promising outlook in solving the supply shortage. The end of the pandemic seems \
+            near, but Americans still continue to take the proper precautions of social distancing and mask wearing.',
+        'mar2021':
+            'With more and more Americans getting vaccinated, states like Texas and Mississippi announce the lift of \
+            their mask mandates and the reopening of businesses to full capacity. New York schools begin to open up and \
+            COVID rates and deaths seems to be dying down',
+        'apr2021':
+            'Cases hit a mini bump as Michigan announces that more young and healthier individuals are getting infected \
+            with COVID-19. To add to the scares, the CDC orders Johnson & Johnson to stop the production of their vaccine as \
+            it was linked to blood clots in six individuals. Globally, the UK variant returns and provides to be a barrier \
+            to ending this COVID pandemic.',
+        'may2021':
+            'Vaccines continue to rollout and the US is slowly getting back to normal. In the meantime, India is seeing an \
+            unprecendented rise in COVID-19 cases. The Biden Adminstration sends aid in the form of vaccines and oxygen tanks \
+            for those in need. ',
+        'jun2021':
+            'California becomes one of the many states to reopen completely and remove the mask mandate. The CDC also lifts \
+            mask requirements for vaccinated people. As of June 21st, almost 50% of the US population has been vaccinated \
+            against COVID-19. The majority of new cases come from those who are not vaccinated. In the coming months, America \
+            can only hope that the COVID curve flattens, and life returns to some form the normalcy that we all enjoyed pre-COVID.',
+        'jul2021':
+            'infoplease.com ajmc.com'
+    }
+
+    var svg = d3.select("svg"),
+        margin = 100,
+        width = svg.attr("width") - margin ,
+        height = svg.attr("height") - margin - 50;
+        
+
+    var g = svg.append("g")
+            .attr("transform", "translate(" + 100 + "," + 100 + ")");
+
+    d3.csv("covid_data_cleaned.csv")
+    .then(function(data) {
+        console.log(data)
+        var times = []
+        var rates = []
+        for (let i = 0; i < data.length; i++){
+            times[i] = data[i]['Time']
+            rates[i] = parseInt(data[i]['Avg'])
+        }
+
+        var x = d3.scaleBand().domain(times).range([0, width]);
+        var y = d3.scaleLinear().domain([0, d3.max(rates)]).range([height, 0])
+
+        // Define ids to be used in the bars
+        var ids = [
+            "jan2020", "feb2020", "mar2020", 
+            "apr2020", "may2020", "jun2020", 
+            "jul2020", "aug2020", "sep2020", 
+            "oct2020", "nov2020", "dec2020",
+            "jan2021", "feb2021", "mar2021",
+            "apr2021", "may2021", "jun2021"
+        ]
+    
+        // Defining active bar state variable
+        var active = "";
+
+        var g = d3.select("svg").append("g")
+        .attr("transform", "translate("+margin+","+margin+")");
+
+        // Adding x-axis
+        g.append("g")
+        .attr("transform", "translate(0,"+(height)+")")
+        .call(d3.axisBottom(x)
+        .tickFormat(function(d,i){
+            return d
+        }).ticks(18));
+
+
+        // Setting the label for the x-axis
+        g.append("text")             
+        .attr("transform", "translate(325,400)")
+        .style("text-anchor", "bottom")
+        .text("Month");
+
+        // Adding y-axis
+        g.append("g").call(d3.axisLeft(y)
+        .tickFormat(function(d,i){
+            return d
+        }).ticks(10));
+
+        // Setting the label for the y-axis
+        g.append("text")
+        .attr("transform", "rotate(-90)")
+        .attr("y", 0 - (margin))
+        .attr("x", 0 - (height / 2))
+        .attr("dy", "1em")
+        .style("text-anchor", "middle")
+        .text("Average Daily Number of Confirmed Cases");   
+
+        // Adding bars
+        g.selectAll(".bar")
+        .data(data)
+        .enter().append("rect")
+        .attr("class", "bar")
+        .attr("x", function(d) { 
+            return x(d['Time']); 
+        })
+        .attr("y", function(d) { return y(d['Avg']); })
+        .attr("width", x.bandwidth() - 2)
+        .attr("height", function(d) { return height - y(d["Avg"]); })
+        .attr("id", function(d,i){ return ids[i]})
+        .attr('fill','salmon')
+        .on("mouseover", function(d) {
+            if (d3.select(this).attr("id") != active){
+                d3.select(this).attr("fill", "red");			
+            }
+        })
+        .on("mouseout", function(d, i) {
+            if (d3.select(this).attr("id") != active){
+                d3.select(this).attr("fill", "salmon");			
+            }
+        })
+        .on("click", function(d, i){            
+            active = d3.select(this).attr("id");
+            document.getElementById("covid-info").innerText = textContent[active];
+            document.getElementById("covid-img").src = "images/" + d3.select(this).attr("id") + '.jpg';
+
+
+            for (id in ids){
+                if (ids[id] == active){
+                    d3.select('#'+active).attr("fill", "green");			
+                }
+                else{
+                    d3.select('#'+ids[id]).attr("fill", "salmon")
+                }
+            }
+
+
+        });
+
+    })
+    .catch(err =>
+        console.log(err)
+    )
+
+
+
+
+
+
+</script>
+</body>
+</html>
